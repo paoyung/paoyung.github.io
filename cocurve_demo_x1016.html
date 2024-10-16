@@ -96,6 +96,10 @@ function onOpen(event) {
 	var msg = "Starting connection to WebSocket server..";
 	console.log(msg);
 	getElmt('wsStat').innerText = msg;
+	setInterval(()=>{
+		//傳什麼就echo什麼回來
+		sendMessage(new Date().getSeconds());
+	}, 1000);
 }
 
 function onClose(event) {
@@ -120,15 +124,7 @@ function goConnect(){
 	var protocol = location.protocol=='https:' ? 'wss' : 'ws';
 	var host = getElmt('wsHost').value;
 	targetUrl = `${protocol}://${host}/ws`;
-	new Promise((resolve, rej)=>{
-		initializeSocket();
-		setTimeout(()=>{resolve();}, 2000);
-	}).then(()=>{
-		setInterval(()=>{
-			//傳什麼就echo什麼回來
-			sendMessage(new Date().getSeconds());
-		}, 1000);
-	});
+	initializeSocket();
 }
 </script>
 </body></html>
