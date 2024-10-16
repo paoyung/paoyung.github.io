@@ -1,0 +1,134 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<style>
+			body {
+				font-size: 16pt;
+			}
+			input {
+                width: 160px;
+                padding: 5px;
+                margin: 4px 0;
+                display: inline-block;
+                border: 1px solid rgb(255, 144, 144);
+                border-radius: 5px;
+                box-sizing: border-box;
+                height: 30px;
+                background-color: #fafafa;
+                color: darkblue;
+            }
+            input:focus {
+                outline: none !important;
+                border: 1px solid rgb(99, 99, 255);
+                box-shadow: 0 0 10px #719ece;
+            }
+            td {
+                text-align: left;
+				height: 20px;
+            }
+			button {
+                background-color: #5c5c5c;
+                border: 0;
+                border: 1px solid rgb(150, 149, 172);
+                color: white;
+                padding: 4px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                border-radius: 4px;
+				width: 60px;
+            }
+            button:hover {
+                outline: none !important;
+                border: 1px solid rgb(255, 62, 62);
+                box-shadow: 0 0 10px #719ece;
+            }
+			table {
+				border: 1px solid darkblue;
+			}
+			td {
+				border: 1px dotted darkblue;
+				padding: 4px;
+			}
+		</style>
+	</head>
+	<body>
+		<table><tr>
+			<td>WS主機</td>
+			<td style="width:300px;"><input type="text" id="wsHost"> <button onclick="goConnect();">連線</button></td>
+		</tr>
+		<tr>
+			<td>狀態</td>
+			<td><span id="wsStat">尚未連線</span></td>
+		</tr>
+		<tr>
+			<td>回傳值</td>
+			<td><span id="rcvData">無</span></td>
+			</td>
+		</tr>
+	</table>
+
+<script>
+function getElmt(e) {return document.getElementById(e);}
+function getV(e) {return id(e).value.trim();}
+function setV(e, v) {id(e).value = v;}
+
+// WebSocket support
+var targetUrl;;
+var websocket;
+// window.addEventListener("load", onLoad);
+
+// function onLoad() {
+//   initializeSocket();
+// }
+
+function initializeSocket() {
+	var msg = "Opening WebSocket connection MicroPython Server..."
+	console.log(msg);
+	getElmt('wsStat').text = msg;
+	websocket = new WebSocket(targetUrl);
+	websocket.onopen = onOpen;
+	websocket.onclose = onClose;
+	websocket.onmessage = onMessage;
+}
+
+function onOpen(event) {
+	var msg = "Starting connection to WebSocket server..";
+	console.log(msg);
+	getElmt('wsStat').innerText = msg;
+}
+
+function onClose(event) {
+	var msg = "Closing connection to server..";
+	console.log(msg);
+	getElmt('wsStat').innerText = msg;
+	setTimeout(initializeSocket, 2000);
+}
+
+var rcvData;
+function onMessage(event) {
+	var msg = "WebSocket message received:"
+	console.log(msg, event);
+	getElmt('rcvData').innerText = event.data;
+}
+
+function sendMessage(message) {
+  websocket.send(message);
+}
+
+function goConnect(){
+	var protocol = location.protocol=='https:' ? 'wss' : 'ws';
+	var host = getElmt('wsHost').value;
+	targetUrl = `${protocol}://${host}/ws`;
+	new Promise((resolve, rej)=>{
+		initializeSocket();
+		setTimeout(()=>{resolve();}, 2000);
+	}).then(()=>{
+		setInterval(()=>{
+			//傳什麼就echo什麼回來
+			sendMessage(new Date().getSeconds());
+		}, 1000);
+	});
+}
+</script>
+</body></html>
