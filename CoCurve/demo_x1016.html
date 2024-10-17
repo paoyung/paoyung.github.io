@@ -62,6 +62,11 @@
 			<td><span id="wsStat">尚未連線</span></td>
 		</tr>
 		<tr>
+			<td>送出值</td>
+			<td><span id="sndData">無</span></td>
+			</td>
+		</tr>
+		<tr>
 			<td>回傳值</td>
 			<td><span id="rcvData">無</span></td>
 			</td>
@@ -116,8 +121,9 @@ function onMessage(event) {
 	getElmt('rcvData').innerText = event.data;
 }
 
-function sendMessage(message) {
-  websocket.send(message);
+function sendMessage(msg) {
+getElmt('sndData').innerText = msg
+  websocket.send(msg);
 }
 
 function goConnect(){
