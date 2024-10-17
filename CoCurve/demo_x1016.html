@@ -129,7 +129,7 @@ getElmt('sndData').innerText = msg
 function goConnect(){
 	var protocol = location.protocol=='https:' ? 'wss' : 'ws';
 	var host = getElmt('wsHost').value;
-	targetUrl = `${protocol}://${host}/ws`;
+	targetUrl = `${protocol}://${host}/ws:4443`;
 	initializeSocket();
 }
 </script>
