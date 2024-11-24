@@ -1,0 +1,380 @@
+<!doctype HTML>
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="content-type">
+<meta name = "viewport" content = "width = device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable=0">
+<title>CoCurve</title>
+<style>
+body { background-color: white  ; font-family: Arial, Helvetica, Sans-Serif; Color: black; }
+
+label{
+    font-family:New Roman;
+    font-size: 12pt;
+}
+
+td{
+    padding-top:2px;
+    padding-bottom:2px;
+    text-align: left;
+}
+
+input[type="text"] {
+    width: 320px;
+    padding: 5px 10px;
+    margin: 4px 0;
+    display: inline-block;
+    border: 1px solid #aaaaaa;
+    border-radius: 5px;
+    box-sizing: border-box;
+    height: 40px;
+    background-color: #e7e7e7;
+    font-size: 11pt;
+}
+
+input[type="text"]:focus {
+    outline: none!important;
+    border: 1px solid #1E581E;
+    box-shadow: 0 0 10px #949860;
+}
+
+select{
+    width: 160px;
+    padding: 5px 10px;
+    margin: 4px 0px;
+    display: inline-block;
+    border : 1px solid #aaaaaa;
+    border-radius: 5px;
+    box-sizing: border-box;
+    height: 39px;
+}
+
+select:focus {
+    outline: none !important;
+    border:1px solid #1E581E;
+    box-shadow: 0 0 10px #949860;
+}
+
+button {
+    background-color: #6F4E37;
+    border : 1px solid #3D1C05;
+    color: white;
+    padding: 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+button:focus {
+    outline: none !important;
+    padding: 7px;
+    border: 2px solid #3D1C05;
+    box-shadow: 0 0 10px #949860;
+}
+
+.bleBtn {
+    background-color: #5c8d99;
+    padding: 8px;
+    border : 1px solid #2e40db;
+}
+
+.bleBtn:focus {
+    padding: 7px;
+    border : 2px solid #2e40db;
+    box-shadow: 0 0 10px #6883aa;
+}
+
+div {
+  display: table;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.tip {
+		width: 300px;
+		text-align: center;
+		border: 1px solid #6F4E37;
+		padding: 7px;
+		display: inline-block;
+}
+
+</style>
+</head>
+<body style="text-align:center;">
+<div style="padding:16px;">
+    <img id=logo style="width:185px;height:35px;" src="./CoCurve.png"/>
+</div>
+<div id="msg">
+    <table>
+        <tr>
+            <td>
+                <label>WiFi熱點名稱/WiFi SSID<br>
+                    <select id="ssid" placeholder= "請選擇熱點">
+                        <option>⬇️請先連接設備...</option>
+                    </select>
+                <input type = "text" id="u_ssid"  placeholder= "自訂/User defined" disabled style="width:154px;">
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>密碼/Password<br>
+                    <input type="text" id="pwd" placeholder='密碼/Password'>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td style=text-align:center>
+                <label style="color:#1E581E;"> 設備名稱: <span id=devId>等待連接</span></label>
+            </td>
+        </tr
+        <tr>
+            <td style="text-align:center;padding-top:10px">
+                <button id="bleConn" class="bleBtn" style="width:100px">連接設備</button>&nbsp;
+                <button id="btnSend" style="width:100px">儲存 Save</button>&nbsp;
+                <button id="btnReset" style="width:100px">重設 Reset</button>
+            </td>
+    </table>
+</div>
+</body>
+<script>
+var devId = "";
+
+function getElmt(e) {return document.getElementById(e);}
+function getV(e) {return getElmt(e).value.trim();}
+//function setV(e, v) {getElmt(e).value = v;}
+
+function resetCfg() {
+    var ssid = getElmt("ssid");
+    var op = ssid.options;
+    op.remove(op.length-1)
+    op.add(new Option("請選擇熱點", "unselected"));
+    ssid.value = "unselected";
+    getElmt("pwd").value = "";
+    getElmt("u_ssid").value = "";
+}
+
+function saveCfg() {
+    var pwd = getV("pwd");
+    if(pwd) {
+        if(8 > pwd.length) alert("密碼至少為8碼，請正確填寫，謝謝！");
+        else {
+            var ssid = getV("ssid");
+            var u_ssid = getV("u_ssid");
+            tlk = {"sp":{ "s": ssid, "us": u_ssid, "p": pwd }}
+            if (writeOnCharacteristic(JSON.stringify(tlk))) {
+                alert("資料已儲存，下次將依此設定連線。");
+                getElmt("msg").innerHTML = '<br>☕ 設定完成 ☕<br><br><div class="tip">如有需要請再次設定，謝謝！<br>請按下左鍵再接通電源，<br>即可選擇開啟模式。</div>';
+            }
+        }
+    } else alert("請選擇[WiFi熱點名稱]並正確填寫[密碼]，謝謝！")
+}
+
+function chk_s1() {
+    if (getElmt("ssid").value == "userDefined") {
+		getElmt("u_ssid").disabled = false;
+        getElmt("u_ssid").focus();
+	} else {
+		getElmt("u_ssid").disabled = true;
+        getElmt("pwd").focus();
+	}
+}
+
+
+// function loadData(jStr){
+//     var d = JSON.parse(jStr);
+//     var aps = d.aps;
+//     // devId = d.devId;
+//     var ssid = getElmt("ssid");
+//     ssid.options.length = 0;
+//     for(var idx=0; idx<aps.length; idx++){
+//         ssid.options.add(new Option(aps[idx],aps[idx]));
+//     }
+//     ssid.options.add(new Option("自訂", "userDefined"));
+//     getElmt("reScan").disabled = false;
+//     // getElmt("devId").innerText = devId;
+//     getElmt("pwd").focus();
+// }
+
+//Define BLE Device Specs
+// var deviceName ='CoCurve';
+var bleService = '225753b0-688a-4a2f-ad88-067157ac29e8';
+// json ap list
+var japlCharacter= '225753b1-688a-4a2f-ad88-067157ac29e8';
+// json uuid/password
+var jtlkCharacter = '225753b2-688a-4a2f-ad88-067157ac29e8';
+
+//Global Variables to Handle Bluetooth
+var bleServer;
+var bleServiceFound;
+var japlCharacterFound;
+
+// Check if BLE is available in your Browser
+function isWebBluetoothEnabled() {
+    if (!navigator.bluetooth) {
+        // console.log('Web Bluetooth API is not available in this browser!');
+        window.alert('使用的瀏覽器未支援WebBLE功能!');
+        // bleStateContainer.innerHTML = "Web Bluetooth API is not available in this browser/device!";
+        return false
+    }
+    // console.log('Web Bluetooth API supported in this browser.');
+    return true
+}
+
+// Connect to BLE Device and Enable Notifications
+function connectToDevice(){
+    console.log('Initializing Bluetooth...');
+    navigator.bluetooth.requestDevice({
+        filters: [{
+            services: [bleService]
+        }]
+    })
+    .then(device => {
+        console.log('Device Selected:', device.name);
+        getElmt("devId").innerText = device.name;
+        var op = ssid.options;
+        op.remove(op.length-1)
+        op.add(new Option("請稍候...", "unselected"));
+        ssid.value = "unselected";
+        // getElmt("reScan").innerText = "請稍候...";
+        // bleStateContainer.innerHTML = 'Connected to device ' + device.name;
+        // bleStateContainer.style.color = "#24af37";
+        device.addEventListener('gattservicedisconnected', onDisconnected);
+        return device.gatt.connect();
+    })
+    .then(gattServer =>{
+        bleServer = gattServer;
+        console.log("Connected to GATT Server");
+        return bleServer.getPrimaryService(bleService);
+    })
+    .then(service => {
+        bleServiceFound = service;
+        console.log("Service discovered:", service.uuid);
+        return service.getCharacteristic(japlCharacter);
+    })
+    .then(characteristic => {
+        console.log("Characteristic discovered:", characteristic.uuid);
+        japlCharacterFound = characteristic;
+        characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
+        // characteristic.startNotifications();
+        // console.log("Notifications Started.");
+        return characteristic.readValue();
+    })
+    .then(value => {
+        console.log("Read value: ", value);
+        const decodedValue = new TextDecoder().decode(value);
+        console.log("Decoded value: ", decodedValue);
+        apl = JSON.parse(decodedValue);
+        console.log(apl);
+        var ssid = getElmt("ssid");
+        ssid.options.length = 0;
+        for(var idx=0; idx<apl.length; idx++){
+            ssid.options.add(new Option(apl[idx],apl[idx]));
+        }
+        ssid.options.add(new Option("自訂", "userDefined"));
+        var reScan = getElmt("reScan");
+        getElmt("pwd").focus();
+        // retrievedValue.innerHTML = decodedValue;            
+    })
+    .catch(error => {
+        console.log('Error: ', error);
+    })
+}
+
+function onDisconnected(event){
+    console.log('Device Disconnected:', event.target.device.name);
+    // bleStateContainer.innerHTML = "Device disconnected";
+    // bleStateContainer.style.color = "#d13a30";
+    // var ivr = setInterval(()=>{
+    //     console.log("try to reconnect...");
+    //     connectToDevice();
+    // }, 5e3);
+    // setTimeout(()=>{
+    //     clearInterval(ivr);
+    // }, 30e3);
+}
+
+function handleCharacteristicChange(event){
+    const newValueReceived = new TextDecoder().decode(event.target.value);
+    console.log("Characteristic value changed: ", newValueReceived);
+    // retrievedValue.innerHTML = newValueReceived;
+    // timestampContainer.innerHTML = getDateTime();
+}
+
+function writeOnCharacteristic(value){
+    if (bleServer && bleServer.connected) {
+        bleServiceFound.getCharacteristic(jtlkCharacter)
+        .then(characteristic => {
+            // console.log("Found the jup characteristic: ", characteristic.uuid);
+            // const data = new Uint8Array([value]);
+            const data = new TextEncoder().encode(value);
+            console.log("encode data is ", data);
+            return characteristic.writeValue(data);
+        })
+        .then(() => {
+            // latestValueSent.innerHTML = value;
+            console.log("Value written to jtlkCharacter:", value);
+            return false;
+        })
+        .catch(error => {
+            console.error("Error writing to the jtlk characteristic: ", error);
+            return false;
+        });
+        return true;
+    } else {
+        console.error ("Bluetooth is not connected. Cannot write to characteristic.")
+        // window.alert("Bluetooth is not connected. Cannot write to characteristic. \n Connect to BLE first!")
+    }
+}
+
+function disconnectDevice() {
+    console.log("Disconnect Device.");
+    if (bleServer && bleServer.connected) {
+        if (japlCharacterFound) {
+            japlCharacterFound.stopNotifications()
+                .then(() => {
+                    console.log("Notifications Stopped");
+                    return bleServer.disconnect();
+                })
+                .then(() => {
+                    console.log("Device Disconnected");
+                    // bleStateContainer.innerHTML = "Device Disconnected";
+                    // bleStateContainer.style.color = "#d13a30";
+
+                })
+                .catch(error => {
+                    console.log("An error occurred:", error);
+                });
+        } else {
+            console.log("No characteristic found to disconnect.");
+        }
+    } else {
+        // Throw an error if Bluetooth is not connected
+        console.error("Bluetooth is not connected.");
+        // window.alert("Bluetooth is not connected.")
+    }
+}
+
+
+setTimeout(function() {
+	getElmt("btnSend").onclick = saveCfg;
+	getElmt("btnReset").onclick = resetCfg;
+	getElmt("ssid").onchange = chk_s1;
+    // Connect Button (search for BLE Devices only if BLE is available)
+    getElmt("bleConn").addEventListener('click', (event) => {
+        if (isWebBluetoothEnabled()){
+            connectToDevice();
+        }
+    });
+    // getElmt("reScan").onclick = reScan;
+    // Disconnect Button
+    // disconnectButton.addEventListener('click', disconnectDevice);
+
+    // Write to the ESP32 LED Characteristic
+    // onButton.addEventListener('click', () => writeOnCharacteristic(1));
+    // offButton.addEventListener('click', () => writeOnCharacteristic(0));
+}, 300);
+
+</script>
+</html>
