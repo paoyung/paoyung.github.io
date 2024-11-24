@@ -1,0 +1,1 @@
+提供以BLE的方式設定WiFi熱點SSID及Password
