@@ -76,7 +76,7 @@ function saveCfg() {
             if(rw.engage()) {
                 alert("資料已儲存，下次將依此設定連線。");
                 getElmt("msg").innerHTML = '<br>☕ 設定完成 ☕<br><br><div class="tip">如有需要請再次設定，謝謝！<br>請按下左鍵再接通電源，<br>即可選擇開啟模式。</div>';
-                setTimer(()=>{
+                setTimeout(()=>{
                     disconnectDevice();
                 }, 2e3);
             }
