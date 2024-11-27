@@ -155,11 +155,11 @@ function connectToDevice(){
         return characteristic.readValue();
     })
     .then(value => {
-        console.log("Read value: ", value);
+        //console.log("Read value: ", value);
         const decodedValue = new TextDecoder().decode(value);
-        console.log("Decoded value: ", decodedValue);
+        //console.log("Decoded value: ", decodedValue);
         apl = JSON.parse(decodedValue);
-        console.log(apl);
+        //console.log(apl);
         var ssid = getElmt("ssid");
         ssid.options.length = 0;
         for(var idx=0; idx<apl.length; idx++){
