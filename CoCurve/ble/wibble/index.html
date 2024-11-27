@@ -190,7 +190,7 @@ function writeOnCharacteristic(value){
             // console.log("Found the jup characteristic: ", characteristic.uuid);
             // const data = new Uint8Array([value]);
             const data = new TextEncoder().encode(value);
-            console.log("encode data is ", data);
+            //console.log("encode data is ", data);
             return characteristic.writeValue(data);
         })
 //        .then(() => {
