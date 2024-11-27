@@ -193,11 +193,10 @@ function writeOnCharacteristic(value){
             console.log("encode data is ", data);
             return characteristic.writeValue(data);
         })
-        .then(() => {
-            // latestValueSent.innerHTML = value;
-            console.log("Value written to jtlkCharacter:", value);
-            return false;
-        })
+//        .then(() => {
+//            // latestValueSent.innerHTML = value;
+//            console.log("Value written to jtlkCharacter:", value);
+//        })
         .catch(error => {
             console.error("Error writing to the jtlk characteristic: ", error);
             return false;
