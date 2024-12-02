@@ -67,12 +67,6 @@ function saveCfg() {
     if(pwd) {
         if(8 > pwd.length) alert("密碼至少為8碼，請正確填寫，謝謝！");
         else {
-            //
-            // var ssid = getV("ssid");
-            // var u_ssid = getV("u_ssid");
-            // tlk = {"sp":{ "s": ssid, "us": u_ssid, "p": pwd }}
-            //
-            // if (writeOnCharacteristic(JSON.stringify(tlk))) {
             if(rw.engage()) {
                 alert("資料已儲存，下次將依此設定連線。");
                 getElmt("msg").innerHTML = '<br>☕ 設定完成 ☕<br><br><div class="tip">如有需要請再次設定，謝謝！<br>請按下左鍵再接通電源，<br>即可選擇開啟模式。</div>';
@@ -109,7 +103,6 @@ var japlCharacterFound;
 // Check if BLE is available in your Browser
 function isWebBluetoothEnabled() {
     if (!navigator.bluetooth) {
-        // console.log('Web Bluetooth API is not available in this browser!');
         window.alert('使用的瀏覽器未支援WebBLE功能!');
         // bleStateContainer.innerHTML = "Web Bluetooth API is not available in this browser/device!";
         return false
@@ -193,10 +186,6 @@ function writeOnCharacteristic(value){
             //console.log("encode data is ", data);
             return characteristic.writeValue(data);
         })
-//        .then(() => {
-//            // latestValueSent.innerHTML = value;
-//            console.log("Value written to jtlkCharacter:", value);
-//        })
         .catch(error => {
             console.error("Error writing to the jtlk characteristic: ", error);
             return false;
@@ -204,7 +193,6 @@ function writeOnCharacteristic(value){
         return true;
     } else {
         console.error ("Bluetooth is not connected. Cannot write to characteristic.")
-        // window.alert("Bluetooth is not connected. Cannot write to characteristic. \n Connect to BLE first!")
     }
 }
 
