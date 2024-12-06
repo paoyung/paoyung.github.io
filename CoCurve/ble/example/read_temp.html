@@ -163,7 +163,7 @@ function connectToDevice(){
     .then(device => {
         console.log('Device Selected:', device.name);
         getElmt("devId").innerText = device.name;
-        device.addEventListener('gattservicedisconnected', onDisconnected);
+        device.addEventListener('gattserverdisconnected', onDisconnected);
         return device.gatt.connect();
     })
     .then(gattServer =>{
