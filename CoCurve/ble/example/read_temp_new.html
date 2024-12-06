@@ -1,0 +1,250 @@
+<!doctype HTML>
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="content-type">
+<meta name = "viewport" content = "width = device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable=0">
+<title>CoCurve</title>
+<style>
+body { background-color: white  ; font-family: Arial, Helvetica, Sans-Serif; Color: black; }
+
+label{
+    font-family:New Roman;
+    font-size: 12pt;
+}
+
+td{
+    padding-top:2px;
+    padding-bottom:2px;
+    text-align: left;
+}
+
+input[type="text"] {
+    width: 320px;
+    padding: 5px 10px;
+    margin: 4px 0;
+    display: inline-block;
+    border: 1px solid #aaaaaa;
+    border-radius: 5px;
+    box-sizing: border-box;
+    height: 40px;
+    background-color: #e7e7e7;
+    font-size: 11pt;
+}
+
+input[type="text"]:focus {
+    outline: none!important;
+    border: 1px solid #1E581E;
+    box-shadow: 0 0 10px #949860;
+}
+
+button {
+    background-color: #6F4E37;
+    border : 1px solid #3D1C05;
+    color: white;
+    padding: 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+button:focus {
+    outline: none !important;
+    padding: 7px;
+    border: 2px solid #3D1C05;
+    box-shadow: 0 0 10px #949860;
+}
+
+.bleBtn {
+    background-color: #5c8d99;
+    padding: 8px;
+    border : 1px solid #2e40db;
+}
+
+.bleBtn:focus {
+    padding: 7px;
+    border : 2px solid #2e40db;
+    box-shadow: 0 0 10px #6883aa;
+}
+
+div {
+  display: table;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+</style>
+</head>
+<body style="text-align:center;">
+<div style="padding:16px;">
+    <img id=logo style="width:185px;height:35px;" src="./CoCurve.png"/>
+</div>
+<div id="main">
+    <table>
+        <tr>
+            <td>
+                <label>溫度<br>
+                    <input type="text" id="temp_data" readonly style="width:200px;">
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>旗號<br>
+                    <input type="text" id="flag_data" readonly style="width:200px;">
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td style=text-align:center>
+                <label style="color:#1E581E;"> 設備名稱: <span id="devId">等待連接</span></label>
+            </td>
+        </tr
+        <tr>
+            <td style="text-align:center;padding-top:10px">
+                <button id="bleConn" class="bleBtn" style="width:100px">連接設備</button>&nbsp;
+            </td>
+    </table>
+</div>
+</body>
+<script>
+function getElmt(e) {return document.getElementById(e);}
+function getV(e) {return getElmt(e).value.trim();}
+function setV(e, v) {getElmt(e).value = v;}
+
+var bleService =    '294c0600-6a22-49bb-a886-d07ad1938a05';
+var tempCharacter = '294c0601-6a22-49bb-a886-d07ad1938a05';
+var flagCharacter = '294c0602-6a22-49bb-a886-d07ad1938a05';
+var bleServer;
+var bleServiceFound;
+var tempCharacterFound;
+var flagCharacterFound;
+var temp;
+var devId = "";
+
+// Check if BLE is available in your Browser
+function isWebBluetoothEnabled() {
+    if (!navigator.bluetooth) {
+        window.alert('使用的瀏覽器未支援WebBLE功能!');
+        return false
+    }
+    return true
+}
+
+function connectToDevice(){
+    console.log('Initializing Bluetooth...');
+    navigator.bluetooth.requestDevice({
+        filters: [{
+            services: [bleService]
+        }]
+    })
+    .then(device => {
+        console.log('Device Selected:', device.name);
+        var d = getElmt("devId");
+        devId = device.name;
+        d.innerText = devId;
+        d.style.color = "darkblue";
+        device.addEventListener('gattserverdisconnected', onDisconnected);
+        return device.gatt.connect();
+    })
+    .then(gattServer =>{
+        bleServer = gattServer;
+        console.log("Connected to GATT Server");
+        return bleServer.getPrimaryService(bleService);
+    })
+    .then(service => {
+        bleServiceFound = service;
+        console.log("Service discovered:", service.uuid);
+    //     return service.getCharacteristic(tempCharacter);
+    // })
+    // .then(characteristic => {
+    //     console.log("Characteristic discovered:", characteristic.uuid);
+    //     tempCharacterFound = characteristic;
+    //     characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicChange);
+    //     return characteristic.readValue();
+    // })
+    // .then(value => {
+    //     // var value = characteristic.readValue();
+    //     console.log("Read value: ", value);
+    //     var decodedValue = new TextDecoder().decode(value);
+    //     setV("temp_data", decodedValue);
+    //     console.log(decodedValue);
+    })
+    .catch(error => {
+        console.log('Error: ', error);
+    })
+}
+
+function onDisconnected(event){
+    console.log('Device Disconnected:', devId);
+    var d = getElmt("devId");
+    d.innerText = "已離線";
+    d.style.color = "darkred";
+}
+
+function isConnected(){
+    return (bleServer && bleServer.connected && bleServiceFound);
+}
+
+function readTemp(){
+    if (isConnected()) {
+        bleServiceFound.getCharacteristic(tempCharacter).then(c=>{
+            return c.readValue();
+        }).then(value=>{
+            const decodedValue = new TextDecoder().decode(value);
+            setV("temp_data", decodedValue);
+        })
+    }
+}
+
+function readFlag(){
+    if (isConnected()) {
+        bleServiceFound.getCharacteristic(flagCharacter).then(c=>{
+            return c.readValue();
+        }).then(value=>{
+            const decodedValue = new TextDecoder().decode(value);
+            setV("flag_data", decodedValue);
+        })
+    }
+}
+
+
+function disconnectDevice() {
+    console.log("Disconnect Device.");
+    if (isConnected()) {
+        if (tempCharacterFound) {
+            tempCharacterFound.stopNotifications()
+                .then(() => {
+                    console.log("Notifications Stopped");
+                    return bleServer.disconnect();
+                })
+                .then(() => {
+                    console.log("Device Disconnected");
+
+                })
+                .catch(error => {
+                    console.log("An error occurred:", error);
+                });
+        } else {
+            console.log("No characteristic found to disconnect.");
+        }
+    } else {
+        // Throw an error if Bluetooth is not connected
+        console.error("Bluetooth is not connected.");
+    }
+}
+
+setTimeout(function() {
+    getElmt("bleConn").addEventListener('click', (event) => {
+        if (isWebBluetoothEnabled()){
+            connectToDevice();
+        }
+    });
+    }, 300);
+    setInterval(()=>{
+        readTemp();
+        readFlag();
+    }, 2e3);
+</script>
+</html>
