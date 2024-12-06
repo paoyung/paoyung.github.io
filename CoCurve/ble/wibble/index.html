@@ -120,9 +120,11 @@ function connectToDevice(){
         }]
     })
     .then(device => {
-        console.log('Device Selected:', device.name);
-        getElmt("devId").innerText = device.name;
 	devId = device.name;
+        console.log('Device Selected:', devId);
+	var d = getElmt("devId");
+	d.innerText = devId;
+	d.style.color = 'blue';
         var op = ssid.options;
         op.remove(op.length-1)
         op.add(new Option("請稍候...", "userDefined"));
@@ -171,7 +173,9 @@ function connectToDevice(){
 function onDisconnected(event){
     // console.log('Device Disconnected:', event.target.device.name);
     console.log('Device Disconnected:', devId);
-    setTimeout(connectToDevice, 3e3);
+    var d = getElmt('devId');
+    d.innerText = '已斷線';
+    d.style.color = 'red';
 }
 
 function handleCharacteristicChange(event){
