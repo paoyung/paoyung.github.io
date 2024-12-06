@@ -174,8 +174,6 @@ function onDisconnected(event){
     // console.log('Device Disconnected:', event.target.device.name);
     console.log('Device Disconnected:', devId);
     var d = getElmt('devId');
-    d.innerText = '已斷線';
-    d.style.color = 'red';
 }
 
 function handleCharacteristicChange(event){
