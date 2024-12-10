@@ -1,0 +1,8 @@
+<!doctype html><meta charset=utf-8><meta content="width=device-width,initial-scale=1,shrink-to-fit=no" name=viewport><title>UUID Exchanger</title><link href=./x1204-cfda6b8f1f5d71c9.css integrity=sha384-wnp4E1fSi4dz+MLeptOQsoXtd+8N5u50oEQvpKufY7BwPN7DDMjSKZZCMtzBBnzZ rel=stylesheet><script nonce="0ljVfTgDph5jEl3OBgnBcA==" type=module>import init, * as bindings from './uuid_ex-e7af180f697dfcb6.js';
+const wasm = await init({ module_or_path: './uuid_ex-e7af180f697dfcb6_bg.wasm' });
+
+
+window.wasmBindings = bindings;
+
+
+dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));</script><link crossorigin href=./uuid_ex-e7af180f697dfcb6.js integrity=sha384-cNskOzdj5g3QDOmGSl2RXqkMZlIWfMj/5aiy9wQFVaj0VUf+lfDvKlKIya9Ao+xi rel=modulepreload><link as=fetch crossorigin href=./uuid_ex-e7af180f697dfcb6_bg.wasm integrity=sha384-eHgJ5xFmoY8bgNDs1PrTSKL1OwUHT5Sz66Zn5Qg0De354PUZ/i3QLlSyi4D5SDW/ rel=preload type=application/wasm></head></html>
