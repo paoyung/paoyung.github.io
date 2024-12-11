@@ -1,4 +1,9 @@
-body { background-color: white  ; font-family: Arial, Helvetica, Sans-Serif; Color: black; }
+body { 
+    background-color: white;
+    font-family: Arial, Helvetica, Sans-Serif;
+    Color: black;
+    user-select: none;
+}
 
 label{
     font-family:New Roman;
@@ -85,9 +90,9 @@ div {
 }
 
 .tip {
-		width: 300px;
-		text-align: center;
-		border: 1px solid #6F4E37;
-		padding: 7px;
-		display: inline-block;
+    width: 300px;
+    text-align: center;
+    border: 1px solid #6F4E37;
+    padding: 7px;
+    display: inline-block;
 }
