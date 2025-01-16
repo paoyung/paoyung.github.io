@@ -27,10 +27,12 @@ async function connectSerial() {
         }, 500);
         btnConn.className = "connOk";
         btnConn.disabled = true;
+        btnConn.innerText = "已連線";
         await listenToPort();
     } catch (e){
         btnConn.className = "connNy";
         btnConn.disabled = false;
+        btnConn.innerText = "連接設備";
         alert("設備連線異常, 原因：" + e);
     }
 }
