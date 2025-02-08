@@ -1,6 +1,26 @@
-<html>
+<!DOCTYPE html>
+<html lang="zh-Hant">
 <head>
-  <meta http-equiv="Refresh" content="0; URL=https://paoyung.github.io/CoCurve/ble/wibble/" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>置中圖片</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center; /* 水平置中 */
+            align-items: center; /* 垂直置中 */
+            min-height: 100vh; /* 確保 body 佔滿整個視窗高度 */
+            margin: 0; /* 移除 body 的預設邊距 */
+        }
+
+        img {
+            max-width: 100%; /* 圖片寬度不超過視窗寬度 */
+            height: auto; /* 保持圖片的長寬比 */
+            display: block; /* 讓圖片可以被置中 */
+        }
+    </style>
 </head>
-  <body></body>
+<body>
+    <img src="construction-area-150275_640.png" alt="施工區域圖片">
+</body>
 </html>
