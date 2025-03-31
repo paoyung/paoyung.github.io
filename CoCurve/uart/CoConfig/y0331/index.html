@@ -1,0 +1,8 @@
+<!doctype html><meta charset=utf-8><meta content="width=device-width,initial-scale=1.0" name=viewport><meta content="text/html; charset=utf-8" http-equiv=content-type><title>CoCurve Config</title><link href=./y0331-992b4cc226bdf.css integrity=sha384-rXpdLzfxR5eM6k7nfKJoW6bpq2nAW31xFXau22vXVJE4rJ1jtXbUQBihQX2oM//C rel=stylesheet><script nonce="z6UtJiZ8IRaPDVRXemWgjQ==" type=module>import init, * as bindings from './CoConfig-f4e1bf335629732e.js';
+const wasm = await init({ module_or_path: './CoConfig-f4e1bf335629732e_bg.wasm' });
+
+
+window.wasmBindings = bindings;
+
+
+dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));</script><link crossorigin href=./CoConfig-f4e1bf335629732e.js integrity=sha384-3wzFcgQjAl1l3zETpKDwpv5D1k43NPRtHiz2C1eWtG8KTrQasup4goc+PEXuxjai rel=modulepreload><link as=fetch crossorigin href=./CoConfig-f4e1bf335629732e_bg.wasm integrity=sha384-wzKnv73rbzSpgJxic5EnnwBv6pIg7jdOnM0pa8xT91YTv+4RLDMWj1Zy+UhueGlS rel=preload type=application/wasm></head></html><body></body>
